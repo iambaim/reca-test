@@ -1,0 +1,59 @@
+make.stox.data<-function(common,caadata,dataList){
+  true.age<-dataList$totage+(rep(dataList$totseason,times=dataList$nFishBoat)-1)/common$nSeason
+  m<-rep(caadata$data$MND,dataList$nFishBoat)
+  d<-rep(caadata$data$DAG,dataList$nFishBoat)
+  y<-rep(caadata$data$AAR,dataList$nFishBoat)
+  realage<-make.age(d,m,y,dataList$totage)
+  unit.mat.age<-cbind(dataList$totage,dataList$totlength,realage,
+                      rep(1:length(dataList$nFishBoat),times=dataList$nFishBoat))
+  unit.mat.wgl<-cbind(dataList$totweight,dataList$totlength,
+                      rep(1:length(dataList$nFishBoat),times=dataList$nFishBoat))
+  if(common$cc){
+    unit.mat.age<-cbind(unit.mat.age,dataList$tottype)
+    unit.mat.wgl<-cbind(unit.mat.wgl,dataList$tottype)
+    
+  }
+  cov.list.age<-cov.list.wgl<-list(cov.mat=NULL,random=NULL,in.catch=NULL,spatial=NULL,
+                                   continuous=NULL,nlev=NULL)
+  
+  if(common$agemodel$Int$year)cov.list.age<-make.stox.vec(dataList$covlist$age$year,
+                                                          max(caadata$Covtabs$Year$index),
+                                                          F,F,F,T,cov.list.age)
+  if(common$agemodel$Int$seas)cov.list.age<-make.stox.vec(dataList$covlist$age$seas,
+                                                          max(caadata$Covtabs$Season$index),common$rand.seas,F,F,T,cov.list.age)
+  if(common$agemodel$Int$gear)cov.list.age<-make.stox.vec(dataList$covlist$age$gear,
+                                                          max(caadata$Covtabs$Gear$index),common$rand.gear,F,F,T,cov.list.age)
+  if(common$agemodel$Int$area)cov.list.age<-make.stox.vec(dataList$covlist$age$area,
+                                                          max(caadata$Covtabs$Area$index),T,F,F,T,cov.list.age)
+  if(common$inc.haulsize)cov.list.age<-make.stox.vec(dataList$tot.size,1,F,F,T,F,cov.list.age)
+  if(common$agemodel$Int$boat)cov.list.age<-make.stox.vec(dataList$covlist$age$boat,
+                                                          length(unique(dataList$boat)),
+                                                          T,F,F,F,cov.list.age)
+  
+  if(common$wglmodel$Int$year)cov.list.wgl<-make.stox.vec(dataList$covlist$wgl$year,
+                                                          max(caadata$Covtabs$Year$wglindex),
+                                                          F,F,F,T,cov.list.wgl)
+  if(common$wglmodel$Int$seas)cov.list.wgl<-make.stox.vec(dataList$covlist$wgl$seas,
+                                                          max(caadata$Covtabs$Season$wglindex),common$rand.seas,F,F,T,cov.list.wgl)
+  if(common$wglmodel$Int$gear)cov.list.wgl<-make.stox.vec(dataList$covlist$wgl$gear,
+                                                          max(caadata$Covtabs$Gear$wglindex),common$rand.gear,F,F,T,cov.list.wgl)
+  if(common$wglmodel$Int$area)cov.list.wgl<-make.stox.vec(dataList$covlist$wgl$area,
+                                                          max(caadata$Covtabs$Area$wglindex),T,F,F,T,cov.list.wgl)
+  if(common$wglmodel$Int$boat)cov.list.wgl<-make.stox.vec(dataList$covlist$wgl$boat,
+                                                          length(unique(dataList$boat)),
+                                                          T,F,F,F,cov.list.wgl)
+  
+  list(cov.list.age=cov.list.age,cov.list.wgl=cov.list.wgl,
+       unit.mat.age=unit.mat.age,unit.mat.wgl=unit.mat.wgl)
+}                    
+make.stox.vec<-function(vector,nlev,is.random,is.spatial,is.cont,is.in.c,vec.list){
+  if(nlev>1){
+    vec.list$cov.mat<-cbind(vec.list$cov.mat,vector)
+    vec.list$random<-c(vec.list$random,as.integer(is.random))
+    vec.list$in.catch<-c(vec.list$in.catch,as.integer(is.in.c))
+    vec.list$spatial<-c(vec.list$spatial,as.integer(is.spatial))
+    vec.list$continuous<-c(vec.list$continuous,as.integer(is.cont))
+    vec.list$nlev<-c(vec.list$nlev,nlev)
+  }
+  vec.list
+}
