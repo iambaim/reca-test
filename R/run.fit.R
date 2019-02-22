@@ -64,11 +64,10 @@ run.fit <- function(stoxdata,common,win)
   write.bin.C.list(lgaList,common$inputfolder,"stoxdata_lga")
   write.bin.C.list(wglList,common$inputfolder,"stoxdata_wgl")
   if(inc.cts.var)write.bin.C.list(hszList,common$inputfolder,"stoxdata_hsz")
-  
   if(win){
-    caa.call <- system.file("bin/caa_main_model1.exe",package="eca")
+    caa.call <- system.file("bin/caa_main_model1.exe",package="Reca")
   } else {
-    caa.call <- system.file("bin/caa_main_model1",package="eca")
+    caa.call <- system.file("bin/caa_main_model1",package="Reca")
   }
   s <- system(paste(shQuote(caa.call)," ",common$inputfolder,sep=""), intern=TRUE)
   filename <- paste0(common$inputfolder,"log.txt")
@@ -83,9 +82,9 @@ run.fit <- function(stoxdata,common,win)
   if(1){
     # common.par$inc.haulsize<-0  Not needed here?
     if(win){
-      caa.call <- system.file("bin/caa_main_model2.exe",package="eca")
+      caa.call <- system.file("bin/caa_main_model2.exe",package="Reca")
     } else {
-      caa.call <- system.file("bin/caa_main_model2",package="eca")
+      caa.call <- system.file("bin/caa_main_model2",package="Reca")
     }
     s <- system(paste(shQuote(caa.call)," ",common$inputfolder,sep=""), intern=TRUE)
     filename <- paste0(common$inputfolder,"log.txt")

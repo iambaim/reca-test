@@ -58,6 +58,8 @@ int main_model1(Input_common *i_inCommon, Input_age *i_inAge, Input_lga *i_inLga
   Data_g_a         *D_g_a_CC=NULL;   /* g_a parameters and simulations for coastal cod */
 
   int       err=0;
+  int       i, l_int, max_boat;
+  double    lobs;
   char      buffer[MAX_STR];
   FILE     *fp;
   double   *mod1_mean_inv_lik; 
@@ -76,7 +78,6 @@ int main_model1(Input_common *i_inCommon, Input_age *i_inAge, Input_lga *i_inLga
   fprintf(g_caa_log,"\nStart main_model1\n");
   #endif
 
-  
   #ifdef DEBUG_INPUT
   sprintf(buffer,"%s/caa_input_model1.txt",i_inCommon->inputfolder);
   fprintf(stderr,"Write input model1 to file: %s\n",buffer);
@@ -115,6 +116,18 @@ int main_model1(Input_common *i_inCommon, Input_age *i_inAge, Input_lga *i_inLga
       write_warning("main_model1:Error calling makedata_age1\n");
       return(err);
     } 
+  /* Put boat covariate in D_orig*/ // moved from add_object_info_age_lga because iboat not in input anymore - must be initialized in makedata_age1
+  max_boat = 1;
+  for(i=0;i<i_D_orig->nHaul;i++)
+    {
+      i_D_orig->boat[i] = 1;
+      if(D_age->glm->xcov[0]->iboat > -1)
+	{
+	  i_D_orig->boat[i] = i_inAge->cov->c_cov_i[D_age->glm->xcov[0]->iboat][i];
+	  max_boat = MAX(max_boat,i_D_orig->boat[i]);
+	}
+    }
+  i_D_orig->nBoat = max_boat;
 
   #ifdef DEBUG_PROG
   fprintf(stderr,"Make age data: makedata_age2\n");
@@ -126,8 +139,6 @@ int main_model1(Input_common *i_inCommon, Input_age *i_inAge, Input_lga *i_inLga
       return(err);
     }
 
-  int i, l_int;
-  double lobs;
   // Construct length interval limits - maybe these should be a part of the original input from R?
   i_D_orig->lstart = CALLOC(i_D_orig->nFish,double); // FREE in end of main_model1
   i_D_orig->lend = CALLOC(i_D_orig->nFish,double);

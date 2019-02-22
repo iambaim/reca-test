@@ -877,6 +877,15 @@ int write_glm_object(FILE *fp, Data_glm *i_glm, int i_print_format)
       fprintf(fp,"%d\n",i_glm->xcov[0]->iboat);
       fprintf(fp,"%d\n",i_glm->xcov[0]->ihaulsize);
     }
+  #ifdef LOG_FILE
+  fprintf(g_caa_log,"write_glm_object: ncat=%d, nHaul=%d, nxcov=%d\n",i_glm->ncat,i_glm->nHaul,i_glm->nxcov);
+  for(i=0;i<i_glm->nxcov;i++)
+    {
+      fprintf(g_caa_log,"n_cov=%d\n",i_glm->xcov[i]->n_cov);
+      for(j=0;j<i_glm->xcov[i]->n_cov;j++)
+	fprintf(g_caa_log,"fac[%d]=%d,fix[%d]=%d\n",j,i_glm->xcov[i]->n_fac[j],j,i_glm->xcov[i]->fix[j]);
+    }
+  #endif
   
   return(0);
 }         /* end of write_glm_object */
@@ -895,6 +904,9 @@ int read_glm_object(FILE *fp, Data_glm **o_glm)
   ret = fread(&glm->nxcov,sizeof(int),1,fp);
   #ifdef DEBUG_PREDICT
   fprintf(stderr,"read_glm_object: ncat=%d, nHaul=%d, nxcov=%d\n",glm->ncat,glm->nHaul,glm->nxcov);
+  #endif
+  #ifdef LOG_FILE
+  fprintf(g_caa_log,"read_glm_object: ncat=%d, nHaul=%d, nxcov=%d\n",glm->ncat,glm->nHaul,glm->nxcov);
   #endif
   /* Covariates */
   glm->xcov = CALLOC(glm->nxcov,Data_cov *); 
@@ -920,6 +932,9 @@ int read_glm_object(FILE *fp, Data_glm **o_glm)
   ret = fread(&glm->xcov[0]->ihaulsize,sizeof(int),1,fp);
   #ifdef DEBUG_PREDICT
   fprintf(stderr,"ispat=%d,ihaul=%d,icell=%d,iboat=%d,ihaulsize=%d\n",glm->xcov[0]->ispat,glm->xcov[0]->ihaul,glm->xcov[0]->icell,glm->xcov[0]->iboat,glm->xcov[0]->ihaulsize);
+  #endif
+  #ifdef LOG_FILE
+  fprintf(g_caa_log,"ispat=%d,ihaul=%d,icell=%d,iboat=%d,ihaulsize=%d\n",glm->xcov[0]->ispat,glm->xcov[0]->ihaul,glm->xcov[0]->icell,glm->xcov[0]->iboat,glm->xcov[0]->ihaulsize);
   #endif
   if(glm->xcov[0]->ihaulsize>0)
     glm->inc_hsz = 1;

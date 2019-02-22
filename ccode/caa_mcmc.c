@@ -63,7 +63,7 @@ int MCMC_model1_init(Data_orig *i_D_orig, Data_age *i_D_age, Age_struct *i_age,
   //to the observations and seems to result in realisations with high
   //posterior densities. It seems however that convergence of the haul-effects
   //goes very slowly and that it is better to not do this. This choice
-  //is therefore commented out, but should be investigated further later on.
+  //is therefore commented out.
   //i_age->par->tau_obs = 0.0001;
   #ifdef DEBUG_PROG
   printf("MCMC_model1: call age_haul_modes\n");

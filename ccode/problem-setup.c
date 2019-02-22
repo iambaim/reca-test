@@ -721,7 +721,13 @@ int GMRFLib_init_problem_store(GMRFLib_problem_tp **problem,
 
 	       sub_mean_constr is not used anywhere else, just nice to have it around perhaps?
 	    */
-	    int nc = constr->nc, inc=1;
+
+	    // CHANGED 22.02.2019
+	    // If reduced constraints are singular and rank is different from nc, then sub_constr->nc is updated, while constr->nc is not
+	    // Then (*problem)->constr_m has different size than constr->nc and we get memory problem
+	    //int nc = constr->nc, inc=1;
+	    int nc = (*problem)->sub_constr->nc, inc=1;
+	    
 	    double alpha, beta, *t_vector;
 
 	    t_vector = Calloc(nc, double); MEMCHK(t_vector);

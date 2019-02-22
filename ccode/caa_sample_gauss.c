@@ -184,7 +184,7 @@ int make_graph_gauss(Data_glm *i_glm,Graph_str *i_gr,Eff_str *i_par,
   #endif
 
   #ifdef DEBUG_PROG
-  printf("make_graph_gauss: GMRFLib_init_problem\n");
+  fprintf(stderr,"make_graph_gauss: GMRFLib_init_problem\n");
   #endif
   err = GMRFLib_init_problem(
           &i_gr->model,i_gr->init,NULL,NULL,NULL,
@@ -195,7 +195,7 @@ int make_graph_gauss(Data_glm *i_glm,Graph_str *i_gr,Eff_str *i_par,
       return(err);
     }
   #ifdef DEBUG_PROG
-  printf("make_graph_gauss: GMRFLib_init_problem OK!\n");
+  fprintf(stderr,"make_graph_gauss: GMRFLib_init_problem OK!\n");
   #endif
 
   FREE(ind);

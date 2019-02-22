@@ -51,8 +51,8 @@ int makedata_age1(int i_nHaul,int i_nAges,int *i_a_vec,
 		  Data_age **o_D_age,int i_fit)
 {
   int         a,i,ind,ncov,err;
-  int         ispat,iboat,ihaul,ihaulsize,n_fac_cell;
-  int        *fixed,*n_fac;
+  int         ispat,iboat,ihaul,ihaulsize,icell,n_fac_cell,n_ispat,n_iboat;
+  int        *fixed,*interaction,*n_fac;
   Data_cov   *xcov;
   Data_age   *D_age;
 
@@ -76,37 +76,71 @@ int makedata_age1(int i_nHaul,int i_nAges,int *i_a_vec,
   D_age->glm->nxcov = 1;  /* Only Intercept */
   D_age->glm->xcov = CALLOC(D_age->glm->nxcov,Data_cov *);   // Free ok
 
+  // create new vectors - have different length than original because ncov is larger
   fixed = CALLOC(ncov,int);  // Free ok
+  interaction = CALLOC(ncov,int);  // Free ok
   n_fac = CALLOC(ncov,int);  // Free ok
   n_fac_cell = 1;
+  ispat = -1;
+  iboat = -1;
+  icell = i_cov->icell; // use input from R
+  n_ispat = 0;
+  n_iboat = 0;
+  ihaulsize = i_cov->ihaulsize;
   ind = 0;
   for(i=0;i<i_cov->n_cov;i++)
     {
+      #ifdef DEBUG_PROG
+      fprintf(stderr,"i=%d,nlev=%d,random=%d,interaction=%d,in.landings=%d,CAR=%d,continuous=%d\n",i,i_cov->n_lev[i],i_cov->random[i],i_cov->interaction[i],i_cov->in_landings[i],i_cov->spatial[i],i_cov->continuous[i]);
+      #endif
+      interaction[i] = i_cov->interaction[i];
       if(i_cov->random[i]==1)
 	fixed[ind] = 0;
       else
 	fixed[ind] = 1;
       n_fac[ind] = i_cov->n_lev[i];
-      if(i_cov->interaction[i]==1)
-	n_fac_cell = n_fac_cell*(i_cov->n_lev[i]-1);
       ind++;
+      if(i_cov->interaction[i]==1) // Use input from R instead?
+	n_fac_cell = n_fac_cell*i_cov->n_lev[i];
+      if(i_cov->spatial[i]==1)
+	{
+	  ispat = i;
+	  n_ispat++;
+	}
+      if((i_cov->in_landings[i]==0)&&(i_cov->random[i]==1)&&(i!=icell))
+	{
+	  iboat = i;
+	  n_iboat++;
+	}
     }
   fixed[ncov-1] = 0;
+  interaction[ncov-1] = 0;
   n_fac[ncov-1] = D_age->glm->nHaul;
-  ispat = i_cov->ispat;
-  ihaulsize = i_cov->ihaulsize;
-  iboat = i_cov->iboat;
   ihaul = ncov-1;
- 
+  if(n_ispat>1)
+    {
+      write_warning("makedata_age1:Number of CAR variables can only be 0 or 1\n");
+      return(1);
+    }
+  if(n_iboat>1)
+    {
+      write_warning("makedata_age1:Number of random variables not in landings can only be 0 or 1\n");
+      return(1);
+    }
+
+  #ifdef DEBUG_PROG
+  fprintf(stderr,"ncov=%d,ispat=%d,icell=%d,iboat=%d,ihaulsize=%d,ihaul=%d,nfac_cell=%d\n",i_cov->n_cov,ispat,icell,iboat,ihaulsize,ihaul,n_fac_cell);
+  #endif
+  
   // Intercept
-  err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,i_cov->interaction,i_cov->c_cov_i,D_age->glm->nHaul,&xcov,i_fit,1);
+  err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,interaction,i_cov->c_cov_i,D_age->glm->nHaul,&xcov,i_fit,1);
   if(err)
     {
       write_warning("makedata_age1:Error calling make_c_cov\n");
       return(err);
     }
   D_age->glm->xcov[0] = xcov;
-  D_age->glm->xcov[0]->icell = i_cov->icell;
+  D_age->glm->xcov[0]->icell = icell;
   if(i_cov->icell)
     D_age->glm->xcov[0]->n_fac_cell = n_fac_cell;
   D_age->glm->xcov[0]->ihaul = ihaul;
@@ -145,7 +179,8 @@ int makedata_age1(int i_nHaul,int i_nAges,int *i_a_vec,
       if(D_age->glm->xcov[0]->ispat > -1)
 	make_spat_struct(i_num_adj_area,i_adj_area,D_age->glm->xcov[0]);
     }
-
+  
+  FREE(interaction);
   FREE(fixed);
   FREE(n_fac);
 
@@ -252,7 +287,7 @@ int makedata_age2(Data_orig *i_D_orig,Data_age *i_D_age,int class_error)
 		    i_D_age->Ages[h][a] += (double) i_D_orig->replength[ind];
 		  else if(i_D_orig->tottype[ind]<0)
 		    n_type_miss++;
-		  else if((i_D_orig->tottype[ind] !=2) & (i_D_orig->tottype[ind] !=4))
+		  else if((i_D_orig->tottype[ind] !=2) && (i_D_orig->tottype[ind] !=4))
 		    fprintf(stderr,"makedata_age2: WARNING: Wrong type included: h=%d,f=%d,type=%d\n",
 			    h,f,i_D_orig->tottype[ind]); 
 		}
@@ -538,37 +573,46 @@ int makedata_lin1(int i_nHaul,double *i_haulweight,
   n_fac = CALLOC(ncov,int);  // Free ok
   interaction = CALLOC(ncov,int); //Free ok  - Must extend the current pointer since haul can be included as covariate
   n_fac_cell = 1;
+  ispat = -1;
+  iboat = -1;
+  icell = i_int_cov->icell;
   ind = 0;
   for(i=0;i<i_int_cov->n_cov;i++)
     {
+      #ifdef DEBUG_PROG
+      fprintf(stderr,"i=%d,nlev=%d,random=%d,interaction=%d,in.landings=%d,CAR=%d,continuous=%d\n",i,i_int_cov->n_lev[i],i_int_cov->random[i],i_int_cov->interaction[i],i_int_cov->in_landings[i],i_int_cov->spatial[i],i_int_cov->continuous[i]);
+      #endif
       interaction[i] = i_int_cov->interaction[i];
       if(i_int_cov->random[i] == 1)
 	fixed[ind] = 0;
       else
 	fixed[ind] = 1;
       n_fac[ind] = i_int_cov->n_lev[i];
-      if(i_int_cov->interaction[i]==1)
-	n_fac_cell = n_fac_cell*(i_int_cov->n_lev[i]-1);
       ind++;
+      if(i_int_cov->interaction[i]==1)
+	n_fac_cell = n_fac_cell*i_int_cov->n_lev[i];
+      if(i_int_cov->spatial[i]==1)
+	ispat = i;
+      if((i_int_cov->in_landings[i]==0)&&(i_int_cov->random[i]==1)&&(i!=icell))
+	iboat = i;
     }
   if(i_inc_hsz==0){
     fixed[ncov-1] = 0;
     n_fac[ncov-1] = D_lin->glm->nHaul;
     interaction[ncov-1] = 0;
   }
-  /* Change to new extended pointer interaction */
-  FREE(i_int_cov->interaction);
-  i_int_cov->interaction = interaction;
-  ispat = i_int_cov->ispat;
-  iboat = i_int_cov->iboat;
   ihaul = ncov-1;
-  fprintf(stderr,"makedata_lin1: Include haul covariate as an option??\n");
   ihaulsize = -1;  // Not included in lga or wgl model
 
+  #ifdef DEBUG_PROG
+  fprintf(stderr,"makedata_lin1: Include haul covariate as an option??\n");
+  fprintf(stderr,"ncov=%d,ispat=%d,icell=%d,iboat=%d,ihaulsize=%d,ihaul=%d,nfac_cell=%d\n",i_int_cov->n_cov,ispat,icell,iboat,ihaulsize,ihaul,n_fac_cell);
+  #endif
+
   if(i_inc_hsz==0)
-    err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,i_int_cov->interaction,i_int_cov->c_cov_i,D_lin->glm->nHaul,&xcov,i_fit,1);
+    err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,interaction,i_int_cov->c_cov_i,D_lin->glm->nHaul,&xcov,i_fit,1);
   else
-    err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,i_int_cov->interaction,i_int_cov->c_cov_i,D_lin->glm->nHaul,&xcov,i_fit,0);
+    err = make_c_cov(ncov,n_fac,ispat,iboat,ihaulsize,fixed,interaction,i_int_cov->c_cov_i,D_lin->glm->nHaul,&xcov,i_fit,0);
   if(err)
     {
       write_warning("makedata_lin1:Error calling make_c_cov for intercept\n");
@@ -581,6 +625,7 @@ int makedata_lin1(int i_nHaul,double *i_haulweight,
   if(i_int_cov->icell)
     D_lin->glm->xcov[0]->n_fac_cell = n_fac_cell;
   FREE(fixed);
+  FREE(interaction);
   FREE(n_fac);
   
   /* Convert covariates */
@@ -1542,8 +1587,7 @@ static int make_c_cov(int i_n_cov,int *i_n_lev,int i_ispat,int i_iboat,int i_iha
   fprintf(stderr,"make_c_cov:");
   fprintf(stderr,"nHaul=%d,ncov=%d\n",i_nHaul,i_n_cov);
   fprintf(stderr,"i_incl_haul=%d\n",i_incl_haul);
-  //for(h=0;h<i_nHaul;h++)
-  for(h=0;h<10;h++)
+  for(h=0;h<MIN(10,i_nHaul);h++)
     {
       for(f=0;f<i_n_cov;f++)
 	fprintf(stderr,"%d ",xcov->c_cov[h][f]);
@@ -2935,7 +2979,7 @@ int write_it(FILE *fp, Data_glm *i_glm, Eff_str *i_par, int i_class_error, int i
     fprintf(stderr,"print age model:\n");
   fprintf(stderr,"printed %d effects\n",n);
   #endif
-   
+
   /* Write ar-coef */
   #ifdef WRITE_HAUL_EFF
   fprintf(unit,"Ar\n");
@@ -2969,7 +3013,6 @@ int write_it(FILE *fp, Data_glm *i_glm, Eff_str *i_par, int i_class_error, int i
           if(!xcov->fix[j])
 	    {
 	      fwrite(&i_par->tau[i][j],sizeof(double),1,fp);
-	      //fprintf(stderr,"j=%d: tau=%f\n",j,i_par->tau[i][j]);
 	      n++;
               #ifdef WRITE_HAUL_EFF
 	      fprintf(unit,"%d %d %f\n",i,j,i_par->tau[i][j]);

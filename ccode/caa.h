@@ -386,6 +386,8 @@ typedef struct
   int         *spatial;
   int         *continuous;
   int         *interaction;
+  int         *in_landings;
+  int         *in_slopeModel;
   int          n_cov_i; /*!< \brief number of integer covariates */
   int          n_cov_d; /*!< \brief number of double covariates */
   int        **c_cov_i; /*!< \brief  matrix of integer covariates */
@@ -416,8 +418,6 @@ typedef struct
   double       delta_age;
   int         *num_adj_area;
   int         *adj_area;
-  double      *in_landings;
-  int         *in_slopeModel;
 } Input_age;
 
 /*!

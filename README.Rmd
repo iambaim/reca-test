@@ -1,0 +1,31 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# R-eca - Estimating Catch-at-Age
+
+Reca is a package made for the Institute of Marine Research. The package produces predictions of catch-at-age,
+i.e. the number of fish caught within each age group, of different fish species.
+
+Predicting the catch-at-age of commercial fish species is an important part of the quota-setting process for 
+many diferent species.
+The Norwegian Computing Center and the Institute of Marine Research have over years developed a Bayesian
+hierarchical model to estimate the catch-at-age of fish. 
+The model aims to estimate both the proportion-at-age and the mean weight of fish, in order to convert 
+total landings statistics to numbers at age.
+
+
+## Functions
+
+The package consists of two main functions; `eca.estimate` and `eca.predict`
+

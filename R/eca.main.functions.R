@@ -166,7 +166,7 @@ eca.estimate <- function(AgeLength,WeightLength,Landings,GlobalParameters)
                seed=GlobalParameters$seed,
                lgamodel=GlobalParameters$lgamodel,
                delta.age=GlobalParameters$delta.age,
-               sim.ar=T,usedebug=F,print.boat=F,
+               sim.ar=T,usedebug=F,print.boat=T,
                save.age=F,save.lga=F,save.wgl=F,inc.haulsize=F)
 
   run.fit(stoxdata,common,win)

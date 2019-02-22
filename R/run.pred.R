@@ -35,9 +35,9 @@ run.pred <- function(stoxdata,common,win)
   write.bin.C.list(dist.cell,common$inputfolder,"dist_cell")
 
   if(win){
-    caa.call <- system.file("bin/caa_main_predict.exe",package="eca")
+    caa.call <- system.file("bin/caa_main_predict.exe",package="Reca")
   } else {
-    caa.call <- system.file("bin/caa_main_predict",package="eca")
+    caa.call <- system.file("bin/caa_main_predict",package="Reca")
   }
   s <- system(paste(shQuote(caa.call)," ",common$inputfolder,sep=""), intern=TRUE)
   filename <- paste0(common$inputfolder,"log.txt")

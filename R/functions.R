@@ -250,8 +250,7 @@ make.tot.factors <- function(nAges,cov.lev,real.cell,predict.cov,model.list,inc.
           ind<-ind+4*(ind1[i]==3)
           if(ind1[i]==1)ncat<-nAges
           else ncat<-1
-          foo<-make.predict.cell(ncat,cov.lev[[ind1[i]]][[ind2[i]]][2:(length(ind)+1)],predict.cov[,ind],
-                                 real.cell[[ind1[i]]][[ind2[i]]])
+          foo<-make.predict.cell(ncat,cov.lev[[ind1[i]]][[ind2[i]]][2:(length(ind)+1)],predict.cov[,ind])
           cell.mat<-cbind(cell.mat,foo$predict.cell)
           ind<-c(ind,cell.ind)
           cell.ind<-cell.ind+1
