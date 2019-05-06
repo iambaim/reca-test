@@ -16,7 +16,7 @@ testEcaFormatted <- function(file, runfiledir){
   return (list(fit=fit, pred=pred))
 }
 
-runTest <- function(testfile, testfiles="./testfiles", tmpdir="./tmp"){
+runTest <- function(testfile, testfiles="./testfiles", tmpdir=tempdir()){
   write("\n", stdout())
   write("######", stdout())
   write(paste("Testing:", testfile), stdout())
@@ -59,7 +59,7 @@ runTest <- function(testfile, testfiles="./testfiles", tmpdir="./tmp"){
   
 
 #' @param tmpdir location where tests will generate output
-runAllTests <- function(testfiles="./testfiles", tmpdir="./tmp"){
+runAllTests <- function(testfiles="./testfiles", tmpdir=tempdir()){
   successes <- c()
   failures <- c()
   if(!(file.exists(tmpdir))){
