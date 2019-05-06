@@ -40,6 +40,7 @@ build_script:
   - SET TAUCS_BUILD_DIR=%cd%
   - build_win.bat
   - SET LTAUCS_LOC=-L%cd%\lib\linux
+  - SET LMETIS_LOC=-L%cd%\metis-4.0.3
   - cd ..
   - build_win.bat
   - cd ..
