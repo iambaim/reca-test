@@ -10,13 +10,11 @@ matrix:
           packages:
             - liblapack-dev
             - libblas-dev
-            - libmetis-dev
             - gfortran
     - os: osx
       addons:
         homebrew:
           packages:
-            - metis
             - gcc
 
 sudo: false
