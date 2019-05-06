@@ -40,3 +40,4 @@ before_script:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L caa_main_predict; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd caa_main_predict; fi
  - cd ..
+ - rm -fR ccode

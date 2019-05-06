@@ -43,6 +43,7 @@ build_script:
   - cd ..
   - build_win.bat
   - cd ..
+  - rmdir /s /Q ccode
   - set PATH=%OLDPATH%
   - travis-tool.sh install_deps
 
