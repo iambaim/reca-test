@@ -34,7 +34,7 @@
 static const char RCSId[] = "$Id: lapack-interface.c 1 2013-03-28 13:54:24Z hanne $";
 
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 
 #include <stdlib.h>

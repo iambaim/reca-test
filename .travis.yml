@@ -1,0 +1,42 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - liblapack-dev
+            - libblas-dev
+            - libmetis-dev
+            - gfortran
+    - os: osx
+      addons:
+        homebrew:
+          packages:
+            - metis
+            - gcc
+
+sudo: false
+cache: packages
+
+warnings_are_errors: false
+
+before_script:
+ - cd ccode
+ - git clone https://github.com/iambaim/taucs
+ - cd taucs
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+     ./buildf2c_osx.sh;
+     export TAUCS_ARCH="darwin_intel";
+   else
+     export TAUCS_ARCH="linux";
+   fi
+ - ./download.sh && ./build.sh && ./gather.sh
+ - export LTAUCS_LOC=-L`pwd`/lib/$TAUCS_ARCH
+ - cd .. && make && make install
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L caa_main_predict; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd caa_main_predict; fi
+

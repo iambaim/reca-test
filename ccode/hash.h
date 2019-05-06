@@ -38,7 +38,7 @@
 #define __GMRFLib_HASH_H__
 
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 #include <stdlib.h>
 #include <stddef.h>

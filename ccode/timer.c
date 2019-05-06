@@ -48,7 +48,7 @@
 #include <time.h>
 #include <stdlib.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
  
 #include "GMRFLib.h"

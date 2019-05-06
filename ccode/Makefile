@@ -1,17 +1,18 @@
 #INCLUDE = -I/usr/local/include -I/nr/prog/R/2.10.1_UBUNTU8.04/lib64/R/include/
-INCLUDE = -I/usr/local/include -I/usr/lib 
+#INCLUDE = -I/usr/local/include -I/usr/lib
 #CFLAGS = -g -Wall -pg -O3 $(INCLUDE)
 #DEBUG_CFLAGS = -DLOG_FILE -DDEBUG_INPUT -DDEBUG_PROG -DDEBUG_GAUSS_FILE 
 DEBUG_CFLAGS =
 #CFLAGS = $(DEBUG_CFLAGS) -g -pg -O0 $(INCLUDE) -L. 
 CFLAGS = $(DEBUG_CFLAGS) -g -O0 $(INCLUDE) -L. 
 
-LIB    = -ltaucs -lmetis -llapack -lblas -lgfortran -lquadmath -Wl,--whole-archive -lpthread -Wl,--no-whole-archive -lm 
-LFLAGS = -L/usr/lib -L../libs -L/usr/lib/atlas-base/atlas -L/usr/lib/atlas-base -static
+LIB    = -ltaucs -lmetis -llapack -lblas -lpthread -lm
+#LFLAGS = -L/usr/lib -L../libs -L/usr/lib/atlas-base/atlas -L/usr/lib/atlas-base
+LFLAGS = $(LTAUCS_LOC)
 BIN    = .
-CC     = gcc -Wdiv-by-zero 
-LD     = gcc 
-
+LD     = $(CC)
+FC     = gfortran
+LD     = gfortran
 
 TEST   = test.o 
 
@@ -158,6 +159,10 @@ d_linmin.o: d_linmin.c
 d_mnbrak.o: d_mnbrak.c
 d_f1dim.o: d_f1dim.c
 d_brent.o: d_brent.c
+
+install: $(caa)
+	mkdir -p ../inst/bin
+	install $(BIN)/caa_main_model1 $(BIN)/caa_main_model2 $(BIN)/caa_main_predict ../inst/bin/
 
 clean:
 	rm -f *.o 

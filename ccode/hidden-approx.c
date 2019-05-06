@@ -57,7 +57,7 @@ static const char RCSId[] = "$Id: hidden-approx.c 1 2013-03-28 13:54:24Z hanne $
 #include <string.h>
 #include <stdio.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 
 #include "GMRFLib.h"

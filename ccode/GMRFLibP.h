@@ -55,7 +55,7 @@ __BEGIN_DECLS
 #include <assert.h>
 #include <stddef.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h> 
+ 
 #endif
 #include <stdlib.h>
 #include <stdio.h>

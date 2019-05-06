@@ -7,4 +7,5 @@ Depends:
     R (>= 2.4.0),MASS
 Description: Performs catch at age analysis using MCMC
 License: GPL2
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Suggests: testthat

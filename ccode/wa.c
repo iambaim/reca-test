@@ -59,7 +59,7 @@
 #include <string.h>
 #include <stdio.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 
 #include "GMRFLib.h"

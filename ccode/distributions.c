@@ -36,7 +36,7 @@
 
 #include <math.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 
 #include <stdlib.h>

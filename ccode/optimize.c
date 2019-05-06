@@ -36,7 +36,7 @@ static const char RCSId[] = "$Id: optimize.c 1 2013-03-28 13:54:24Z hanne $";
 
 #include <stdio.h>
 #if !defined(__FreeBSD__)
-#include <malloc.h>
+
 #endif
 
 #include <math.h>
