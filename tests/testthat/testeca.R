@@ -12,6 +12,8 @@ testEcaFormatted <- function(file, runfiledir){
   ## Estimate model
   fit <- eca.estimate(AgeLength,WeightLength,Landings,GlobalParameters)
   pred <- eca.predict(AgeLength,WeightLength,Landings,GlobalParameters)
+
+  return (list(fit=fit, pred=pred))
 }
 
 runTest <- function(testfile, testfiles="./testfiles", tmpdir="./tmp"){
@@ -38,18 +40,21 @@ runTest <- function(testfile, testfiles="./testfiles", tmpdir="./tmp"){
   }
   handle <- function(e){write(paste("Test", testfile, ": fail"), stdout())}
   
-  ret <- FALSE
-  tryCatch(
-    {testcurrent()
-    write(paste("Test", testfile, ": sucsess"), stdout())
-    ret <- T
-    }, 
-    error = handle,
-    finally={
-      write(paste("Test", testfile, "finished"), stdout())
-      return(ret)
-      }
-    )
+  ret <- testcurrent()
+
+
+#  tryCatch(
+#    {testcurrent()
+#    write(paste("Test", testfile, ": sucsess"), stdout())
+#    ret <- T
+#    }, 
+#    error = handle,
+#    finally={
+#      write(paste("Test", testfile, "finished"), stdout())
+#      return(ret)
+#      }
+#    )
+  return(TRUE)
 }
   
 
