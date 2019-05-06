@@ -31,6 +31,7 @@ cache:
 # Adapt as necessary starting from here
 
 build_script:
+  - set OLDPATH=%PATH%
   - rmdir /s /Q C:\OpenSSL-Win32 C:\OpenSSL-Win64
   - cd %APPVEYOR_BUILD_FOLDER%\ccode
   - git clone https://github.com/iambaim/taucs.git
@@ -41,6 +42,8 @@ build_script:
   - SET LTAUCS_LOC=-L%cd%\lib\linux
   - cd ..
   - build_win.bat
+  - cd ..
+  - set PATH=%OLDPATH%
   - travis-tool.sh install_deps
 
 test_script:
