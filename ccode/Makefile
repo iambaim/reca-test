@@ -8,7 +8,7 @@ CFLAGS = $(DEBUG_CFLAGS) -g -O0 $(INCLUDE) -L.
 
 LIB    = -ltaucs -lmetis -llapack -lblas -lpthread -lm
 #LFLAGS = -L/usr/lib -L../libs -L/usr/lib/atlas-base/atlas -L/usr/lib/atlas-base
-LFLAGS = $(LTAUCS_LOC)
+LFLAGS = $(LTAUCS_LOC) $(LMETIS_LOC)
 BIN    = .
 LD     = $(CC)
 FC     = gfortran

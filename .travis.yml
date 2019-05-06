@@ -34,6 +34,7 @@ before_script:
    fi
  - ./download.sh && ./build.sh
  - export LTAUCS_LOC=-L`pwd`/lib/$TAUCS_ARCH
+ - export LMETIS_LOC=-L`pwd`/metis-4.0.3
  - cd .. && make && make install
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L caa_main_predict; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd caa_main_predict; fi
