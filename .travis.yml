@@ -34,7 +34,7 @@ before_script:
    else
      export TAUCS_ARCH="linux";
    fi
- - ./download.sh && ./build.sh && ./gather.sh
+ - ./download.sh && ./build.sh
  - export LTAUCS_LOC=-L`pwd`/lib/$TAUCS_ARCH
  - cd .. && make && make install
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L caa_main_predict; fi
