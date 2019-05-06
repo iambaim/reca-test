@@ -10,13 +10,11 @@ matrix:
           packages:
             - liblapack-dev
             - libblas-dev
-            - libmetis-dev
             - gfortran
     - os: osx
       addons:
         homebrew:
           packages:
-            - metis
             - gcc
 
 sudo: false
@@ -26,17 +24,29 @@ warnings_are_errors: false
 
 before_script:
  - cd ccode
+ # Build METIS
+ - curl -o metis.tgz http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/OLD/metis-4.0.3.tar.gz
+ - tar -zxvf metis.tgz
+ - cd metis-4.0.3
+ - make
+ - export LMETIS_LOC=-L`pwd`
+ - cd ..
+ # Build TAUCS
  - git clone https://github.com/iambaim/taucs
  - cd taucs
+ - mkdir -p external/lib/linux
+ - cp ${LMETIS_LOC}/* external/lib/linux/
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
      ./buildf2c_osx.sh;
      export TAUCS_ARCH="darwin_intel";
    else
      export TAUCS_ARCH="linux";
    fi
- - ./download.sh && ./build.sh && ./gather.sh
+ - ./download.sh && ./build.sh
  - export LTAUCS_LOC=-L`pwd`/lib/$TAUCS_ARCH
- - cd .. && make && make install
+ - cd ..
+ # Build eca binaries 
+ - make && make install
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L caa_main_predict; fi
  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd caa_main_predict; fi
  - cd ..

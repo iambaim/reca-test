@@ -4,11 +4,11 @@
 #DEBUG_CFLAGS = -DLOG_FILE -DDEBUG_INPUT -DDEBUG_PROG -DDEBUG_GAUSS_FILE 
 DEBUG_CFLAGS =
 #CFLAGS = $(DEBUG_CFLAGS) -g -pg -O0 $(INCLUDE) -L. 
-CFLAGS = $(DEBUG_CFLAGS) -g -O0 $(INCLUDE) -L. 
+CFLAGS = $(DEBUG_CFLAGS) -g -O2 $(INCLUDE)
 
 LIB    = -ltaucs -lmetis -llapack -lblas -lpthread -lm
 #LFLAGS = -L/usr/lib -L../libs -L/usr/lib/atlas-base/atlas -L/usr/lib/atlas-base
-LFLAGS = $(LTAUCS_LOC)
+LFLAGS = $(LMETIS_LOC) $(LTAUCS_LOC)
 BIN    = .
 LD     = $(CC)
 FC     = gfortran
